@@ -1,0 +1,21 @@
+run_id,case_id,call_status,case_pass,failure_label,notes
+run-00-blocked,A-N-001,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-N-002,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-N-003,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-N-004,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-N-005,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-N-006,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-N-007,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-N-008,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-H1-001,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-H1-002,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-H2-001,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-H2-002,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-H3-001,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-H3-002,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-H4-001,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-H4-002,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-R-001,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-R-002,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-R-003,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint
+run-00-blocked,A-R-004,BLOCKED,NOT_RUN,INFRA_NO_ENDPOINT,Repo chưa có codebase hoặc prototype endpoint

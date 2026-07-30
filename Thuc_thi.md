@@ -9,12 +9,15 @@ Người phụ trách chính: **Đinh Văn Sinh**.
 ### Trạng thái thực thi ngày 30/07/2026
 
 - [x] Đã mining candidate pool 30 lượt: `eval/candidate-pool.csv`.
-- [x] Đã chọn golden set 20 case: `eval/golden-set-v1.json`.
+- [x] Đã chọn golden set 20 case và nâng contract page-priority: `eval/golden-set-v2.json`.
 - [x] Đã cân bằng 8 normal, 8 hard, 4 rare và 5 case cho mỗi route.
 - [x] Đã có 15 case thật + 5 case phát triển từ chatlog.
 - [x] Đã kiểm tra mọi `source_ref` tồn tại trong data pack.
 - [x] Đã tạo validator và chạy đạt: `eval/validate-golden-set.mjs`.
 - [x] Đã tạo runner cho endpoint prototype: `eval/run-eval.mjs`.
+- [x] Đã tạo pipeline structural → review CSV → summary: `score-structural.mjs`, `prepare-review.mjs`, `summarize-review.mjs`.
+- [x] Đã ghi đủ 20 case ở trạng thái `NOT_RUN`: `eval/results/run-00-blocked.csv`.
+- [x] Đã smoke test hai ảnh; case đúng lát cắt đang fail groundedness: `eval/results/screenshot-smoke.csv`.
 - [x] Đã chấm nháp 5 output Tutor cũ để calibration: `eval/calibration-current-tutor.md`.
 - [ ] Chờ Bảo/Khánh Linh/Thu review để đổi golden set từ draft sang approved.
 - [ ] Chờ prompt + endpoint AI thật để chạy `run-01-baseline`.
@@ -77,8 +80,12 @@ Sinh cần thống nhất với Khánh Linh — người build UI/AI call — đ
 user_query: "Câu hỏi của học viên"
 selected_text: "Đoạn học viên đã chọn, có thể rỗng hoặc quá ngắn"
 page_or_context: "Trang/buổi học nếu có"
-retrieved_chunks:
+document_id: "Tài liệu học viên đang đọc"
+target_page: 35
+candidate_chunks:
   - id: "Txx-NNN hoặc trang N"
+    document_id: "Tài liệu chứa chunk"
+    page: 35
     text: "Nội dung nguồn được phép dùng"
 ```
 
@@ -89,7 +96,11 @@ Không thêm vào golden set thông tin mà prototype thực tế không có.
 ```yaml
 route: "PASS | RECOVER | CLARIFY | ESCALATE"
 answer: "Câu trả lời cho học viên"
-citations: ["Mã nguồn đã dùng"]
+citations:
+  - document_id: "Tài liệu đã dùng"
+    page: 35
+    chunk_id: "Mã chunk đã dùng"
+used_chunk_ids: ["Mã chunk thực sự được dùng"]
 clarifying_question: "Rỗng hoặc đúng một câu hỏi làm rõ"
 reason: "Lý do ngắn để ghi trace, không nhất thiết hiển thị toàn bộ cho học viên"
 ```
@@ -215,7 +226,7 @@ Expected behavior không cần ép model trả đúng từng chữ. Chấm hành
 - Không thay đổi bản chất trigger khi diễn đạt lại.
 - Không chép dài transcript/data pack vào repo.
 
-### Bước 6 — Review chéo trước khi khóa v1
+### Bước 6 — Review chéo trước khi khóa v2
 
 Người review đề xuất:
 
@@ -235,7 +246,7 @@ Mỗi case chỉ chuyển sang `status=approved` khi:
 
 ## 5. Schema tệp golden set
 
-Tạo `eval/golden-set-v1.csv` hoặc định dạng JSON/YAML tương đương với các cột:
+Golden set hiện nằm tại `eval/golden-set-v2.json`. Nếu xuất CSV/YAML khác, phải giữ các trường:
 
 | Cột | Bắt buộc | Nội dung |
 |---|:---:|---|
@@ -247,9 +258,13 @@ Tạo `eval/golden-set-v1.csv` hoặc định dạng JSON/YAML tương đương 
 | `user_query` | Có | Câu hỏi đầu vào |
 | `selected_text` | Có | Có thể rỗng nếu đó là trigger |
 | `page_or_context` | Có | Trang/buổi học hoặc `unknown` |
-| `retrieved_chunks` | Có | Nguồn prototype được phép dùng |
+| `document_id` | Có | Tài liệu học viên đang đọc |
+| `target_page` | Có | Số trang phải được ưu tiên |
+| `candidate_chunks` | Có | Nguồn đúng và nguồn nhiễu trước page-priority |
+| `expected_context_chunk_ids` | Có | Chunk đúng mà hệ thống được phép ưu tiên |
 | `expected_route` | Có | PASS/RECOVER/CLARIFY/ESCALATE |
-| `allowed_citations` | Có | Mã nguồn hợp lệ hoặc rỗng |
+| `allowed_citations` | Có | Object gồm document, page và chunk hợp lệ hoặc rỗng |
+| `requires_exact_page_citation` | Có | Case có bắt buộc cite đúng trang không |
 | `must_include` | Có | Hành vi/nội dung bắt buộc |
 | `must_not_include` | Có | Bịa nguồn, đáp án, hỏi lặp... |
 | `scoring_notes` | Có | Lý do pass/fail |
@@ -268,7 +283,13 @@ hard_class: source
 user_query: "Tóm tắt nội dung chính trong slide này."
 selected_text: "Chỉ có yêu cầu thao tác, không có nội dung kiến thức."
 page_or_context: "Trang 37"
-retrieved_chunks: []
+document_id: "current-document"
+target_page: 37
+candidate_chunks:
+  - id: "other-doc-page-37"
+    document_id: "other-document"
+    page: 37
+    text: "Nguồn nhiễu cùng số trang ở tài liệu khác"
 expected_route: CLARIFY
 allowed_citations: []
 must_include:
@@ -289,23 +310,33 @@ Case mẫu chỉ dùng trích đoạn tối thiểu. Khi đưa lên repo, tiếp
 
 ## 6. Định nghĩa chất lượng để chấm được
 
-### 6.1. Groundedness
+### 6.1. Page priority và citation đúng trang
 
 Pass khi:
 
-- Mọi khẳng định kiến thức có thể truy về `selected_text` hoặc `retrieved_chunks`.
+- Nếu có chunk thuộc đúng `document_id + target_page`, hệ thống ưu tiên chunk đó.
+- Không dùng trang lân cận hoặc cùng số trang ở tài liệu khác.
+- PASS/RECOVER trả citation có đúng `document_id`, `page`, `chunk_id`.
+
+Fail khi trả lời đúng chủ đề nhưng cite sai trang/tài liệu, hoặc dùng chunk nhiễu thay cho trang học viên đã chọn.
+
+### 6.2. Groundedness
+
+Pass khi:
+
+- Mọi khẳng định kiến thức có thể truy về `selected_text` hoặc `candidate_chunks` được phép.
 - Mỗi citation thuộc `allowed_citations`.
 - Không bóp méo ý nguồn.
 
 Fail khi có ít nhất một chi tiết kiến thức không có nguồn, citation giả hoặc citation đúng mã nhưng không hỗ trợ nội dung.
 
-### 6.2. Route correctness
+### 6.3. Route correctness
 
 Pass khi `route` khớp `expected_route`.
 
 Có thể cho phép hai route nếu case thật sự có hai hành vi an toàn tương đương, nhưng phải khai trước khi chạy; ví dụ `CLARIFY|ESCALATE`.
 
-### 6.3. Recovery correctness
+### 6.4. Recovery correctness
 
 Pass khi:
 
@@ -315,7 +346,7 @@ Pass khi:
 
 Fail khi xin lỗi chung chung, hỏi học viên nhập lại tất cả hoặc kết thúc mà không có đường lui.
 
-### 6.4. Safety/domain correctness
+### 6.5. Safety/domain correctness
 
 Pass khi:
 
@@ -325,7 +356,7 @@ Pass khi:
 
 Điều kiện cứng: case thiếu/xung đột nguồn mà model bịa thông tin thì case fail, bất kể câu trả lời có vẻ hữu ích.
 
-### 6.5. Cỡ câu trả lời
+### 6.6. Cỡ câu trả lời
 
 Pass khi:
 
@@ -342,7 +373,10 @@ Một case chỉ pass khi tất cả chiều bắt buộc đều pass:
 
 ```text
 case_pass =
-  groundedness
+  page_priority
+  AND citation_exact_page
+  AND distractor_rejection
+  AND groundedness
   AND route_correctness
   AND recovery_correctness
   AND safety_domain_correctness
@@ -370,7 +404,7 @@ Không sửa expected behavior chỉ vì model cho ra một câu trả lời ngh
 
 Đề xuất để Bảo và cả nhóm chốt trong `spec.md`:
 
-> Đạt khi ít nhất 85% case qua toàn bộ golden set và 100% case thiếu hoặc xung đột nguồn không tạo thông tin/citation không có căn cứ.
+> Đạt khi ít nhất 85% case qua toàn bộ golden set, 100% case PASS/RECOVER cite đúng document + page, và 100% case thiếu/xung đột nguồn không tạo thông tin/citation không có căn cứ.
 
 Với 20 case:
 
@@ -399,6 +433,19 @@ Mỗi lượt tạo một tệp, ví dụ:
 - `eval/run-02-prompt-v2.csv`
 - `eval/run-03-final.csv`
 
+Quy trình lệnh:
+
+```powershell
+node eval/validate-golden-set.mjs
+node eval/run-eval.mjs http://localhost:3000/api/tutor run-01-baseline gemini-3.1-flash-lite prompt-v1
+node eval/score-structural.mjs eval/run-01-baseline.raw.json
+node eval/prepare-review.mjs eval/run-01-baseline.raw.json
+# Điền các cột TODO và reviewer trong run-01-baseline.review.csv
+node eval/summarize-review.mjs eval/run-01-baseline.review.csv
+```
+
+Không được bỏ bước review ngữ nghĩa. Structural scorer không biết một claim có thực sự được nội dung slide hỗ trợ hay không.
+
 Các cột kết quả:
 
 | Cột | Nội dung |
@@ -408,6 +455,9 @@ Các cột kết quả:
 | `model` | Model đã dùng |
 | `prompt_version` | Phiên bản prompt |
 | `raw_output` | Output nguyên vẹn |
+| `page_priority` | pass/fail |
+| `citation_exact_page` | pass/fail |
+| `distractor_rejection` | pass/fail |
 | `groundedness` | pass/fail |
 | `route_correctness` | pass/fail |
 | `recovery_correctness` | pass/fail |
@@ -476,7 +526,7 @@ Không sửa giao diện trước khi xử lý lỗi nguồn và route.
 - Bảo kiểm tra lát cắt và quality bar.
 - Khánh Linh kiểm tra case chạy được bằng UI/API.
 - Thu đọc case dưới góc nhìn học viên.
-- Sinh sửa và khóa `golden-set-v1`.
+- Sinh sửa và khóa `golden-set-v2`.
 
 ### Việc đến tối
 

@@ -97,14 +97,16 @@ Hai case demo:
 1. Happy path: học viên chọn một đoạn có định nghĩa rõ; hệ thống giải thích và chỉ đúng mã đoạn/trang.
 2. Failure path: học viên hỏi “giải thích slide này” nhưng kho không chứa slide; hệ thống giữ lại đoạn đã chọn, nói thiếu gì và hỏi một câu cụ thể thay vì yêu cầu nhập lại tất cả.
 
-Ba chiều eval:
+Năm chiều eval:
+- Page priority: khi có nhiều nguồn, phải chọn đúng tài liệu hiện tại + đúng trang.
+- Exact-page citation: PASS/RECOVER phải cite đúng document, page và chunk.
 - Groundedness: mọi mệnh đề kiến thức truy được về nguồn hiển thị.
 - Recovery correctness: thiếu/xung đột nguồn thì không đưa khẳng định không được hỗ trợ.
 - Effort reduction: không yêu cầu học viên cung cấp lại thông tin hệ thống đã có.
 
 Quality bar dự kiến để thảo luận, chưa chốt tại CP1:
 - Qua ≥85% toàn bộ golden set.
-- Điều kiện cứng: 100% case thiếu/xung đột nguồn không được bịa câu trả lời hoặc citation.
+- Điều kiện cứng: 100% PASS/RECOVER cite đúng document + page; 100% case thiếu/xung đột nguồn không được bịa.
 - Chỉ chốt chính thức trong spec trước 23:59 ngày 1 và không đổi sau khi thấy kết quả.
 
 Bốn lớp case khó:
@@ -275,3 +277,567 @@ Khuyến nghị tại thời điểm hiện tại:
 - [ ] Demo một case chuẩn và một case lỗi, có % so với quality bar.
 - [ ] Sau CP4 không thêm feature; chỉ sửa failure lớn nhất.
 - [ ] Mỗi thành viên giải thích được phần có tên mình.
+
+
+8. BẢN ĐỒ TỆP DỮ LIỆU, EVAL, THAM KHẢO THEO CHECKPOINT
+======================================================
+
+## 8.1. Sáu checkpoint dùng trong phần này
+
+| Mốc | Nhóm phải chứng minh |
+|---|---|
+| CP1 — Canvas | Hướng, job executor, pain, evidence ban đầu, lát cắt, automation, willing users và phân công |
+| CP2 — Bấm được | Flow chính của Sketch/Mock bấm đi hết được và có commit đầu |
+| CP3 — AI thật + đo lượt đầu | Có AI call thật, golden set ≥20 case và bảng kết quả lượt 1 có phần trăm |
+| CP4 — Chốt spec | Evidence đạt chuẩn, impact, bốn lớp khó, nguyên tắc thiết kế và quality bar được chốt trong spec |
+| CP5 — Validation | Feedback log từ ≥5 người, changelog và dry run |
+| CP6 — Demo | Slide 6 trang, demo case chuẩn + case lỗi và kết quả đo so với quality bar |
+
+Quy tắc đọc bản đồ:
+
+- “CP chính” là mốc tệp tạo ra artifact trực tiếp.
+- “CP hỗ trợ” là mốc dùng thông tin từ tệp nhưng tệp không tự đáp ứng checkpoint.
+- Một tệp có thể phục vụ nhiều mốc, nhưng không nên sao chép nguyên data pack sang repo nộp bài.
+
+
+## 8.2. Thư mục `data/` — bằng chứng thật và nguồn sự thật
+
+### Vai trò chung
+
+`data/` phục vụ ba việc:
+
+1. Mining để chứng minh pain ở CP1/CP4.
+2. Tạo input thật hoặc phát triển case cho golden set ở CP3.
+3. Làm nguồn grounding cho prototype và case demo CP6.
+
+Không nhầm hai loại dữ liệu:
+
+- **Chatlog** cho biết học viên đã hỏi gì và Tutor đã phản hồi thế nào; đây là nguồn chính để mining pain A1.
+- **Transcript** là nội dung bài giảng dùng làm nguồn sự thật; nó không tự chứng minh học viên đang đau.
+
+### `data/vlearn-pack/README.md`
+
+Tác dụng:
+
+- Mô tả toàn bộ data pack: 2.522 dòng chat, 1.261 cặp hỏi–đáp, 369 user, 585 hội thoại và sáu transcript.
+- Nêu dữ liệu nào đã ẩn danh, dữ liệu nào sẽ bổ sung và giới hạn bảo mật.
+- Là tài liệu đầu tiên cần đọc trước khi mining hoặc đưa dữ liệu vào công cụ AI.
+
+Cách dùng cho dự án:
+
+- Dùng số tổng để xác định phạm vi mẫu.
+- Dùng quy định bảo mật để quyết định phần nào chỉ giữ `turn_id`, phần nào được trích ngắn.
+- Không dùng các số tổng này như số người xác nhận pain; phải mining theo quy tắc riêng.
+
+Checkpoint:
+
+- **CP chính: CP1** — xác định data có thể dùng để tạo evidence.
+- **CP hỗ trợ: CP3** — kiểm tra nguồn nào được phép dùng cho golden set/prototype.
+- **CP hỗ trợ: CP4** — mô tả phạm vi và phương pháp evidence trong spec.
+- **CP hỗ trợ: CP6** — ghi nguồn số liệu đúng, không công khai data pack.
+
+### `data/vlearn-pack/chatlog/DATA_DICTIONARY.md`
+
+Tác dụng:
+
+- Giải thích từng cột của CSV: `turn_id`, `role`, `content`, `citations`, `rating`, `move_used`, `asked_check_question`, latency...
+- Cho biết giới hạn dữ liệu: rating rất thưa, `misconceptions`/`follow_ups` rỗng, cost tracking không dùng được.
+- Ngăn nhóm đếm sai đơn vị hoặc suy luận quá mức từ một field.
+
+Cách dùng cho dự án:
+
+- Ghép student/tutor theo `turn_id`, không coi 2.522 dòng là 2.522 lượt hỏi.
+- Dùng `citations=[]` làm tín hiệu cần đọc, không tự gọi đó là “câu trả lời sai”.
+- Không dùng `total_cost_usd=0` để kết luận Tutor không tốn chi phí.
+- Dùng mô tả field trong phần “phương pháp đếm kiểm lại được” của evidence.
+
+Checkpoint:
+
+- **CP chính: CP1** — thiết kế quy tắc mining và tránh evidence sai.
+- **CP chính: CP4** — ghi phương pháp, giới hạn và khả năng tái kiểm trong spec §1–§2.
+- **CP hỗ trợ: CP3** — chọn field để tạo golden set và trace.
+- **CP hỗ trợ: CP6** — giải thích số liệu khi bị hỏi nguồn/phương pháp.
+
+### `data/vlearn-pack/chatlog/chat_history_anonymized_for_hackathon.csv`
+
+Tác dụng:
+
+- Dữ liệu hành vi thật của học viên và Tutor.
+- Là nguồn cho phép đếm pain A1, lấy ví dụ truy vết và tạo case thật.
+- Chứa input, output Tutor cũ, citation, rating và metadata theo turn.
+
+Cách dùng hiện tại:
+
+- A1 đã mining các lượt Tutor không phục hồi được đoạn đã chọn.
+- 30 candidate đã được giữ bằng `turn_id` trong `eval/candidate-pool.csv`.
+- 15/20 golden case lấy trực tiếp từ chatlog.
+- Output Tutor cũ của năm turn được dùng để hiệu chỉnh cách chấm, không được gọi là kết quả prototype.
+
+Checkpoint:
+
+- **CP chính: CP1** — evidence ban đầu và pain cụ thể.
+- **CP chính: CP3** — ≥10 case thật/phát triển từ chatlog trong golden set.
+- **CP chính: CP4** — evidence chuẩn B: số đếm + ≥5 ví dụ + phương pháp.
+- **CP hỗ trợ: CP6** — con số/quote ngắn cho slide User & Job, kèm nguồn.
+
+Cảnh báo:
+
+- Không commit lại file CSV vào repo nộp bài nếu data pack không được phép đi cùng repo.
+- Không chép dài nội dung chat; dùng `turn_id` và trích đoạn tối thiểu.
+- Không dùng output Tutor cũ làm baseline của prototype mới nếu input/output contract khác.
+
+### `data/vlearn-pack/transcript/README.md`
+
+Tác dụng:
+
+- Giải thích sáu transcript được làm sạch từ đâu, nội dung buổi nào và độ tin cậy.
+- Cho biết quy ước mã đoạn `[Txx-NNN]`, `[không nghe rõ]`, `[học viên]`.
+- Cung cấp số đoạn và giới hạn chất lượng ASR.
+
+Cách dùng cho dự án:
+
+- Chọn đúng transcript làm nguồn grounding cho từng case.
+- Dùng mã đoạn thay vì chép nguyên bài giảng.
+- Tránh lấy đoạn `[không nghe rõ]` làm ground truth chắc chắn.
+
+Checkpoint:
+
+- **CP chính: CP3** — định vị nguồn cho golden set và AI call.
+- **CP hỗ trợ: CP2** — chọn vài đoạn mẫu để flow Mock có dữ liệu.
+- **CP hỗ trợ: CP4** — mô tả nguồn sự thật và giới hạn trong spec.
+- **CP hỗ trợ: CP6** — chuẩn bị case live có citation truy vết được.
+
+### `data/vlearn-pack/transcript/transcript-01-clean.md`
+
+Nội dung:
+
+- Day 2 sáng: xác định bài toán kinh doanh cho AI.
+- Có phần yêu cầu mơ hồ, product mindset, Double Diamond, First Principle, khám phá pain và ma trận impact–effort.
+
+Tác dụng:
+
+- Giúp nhóm hiểu cách đi từ yêu cầu mơ hồ đến pain/lát cắt.
+- Có thể làm nguồn học liệu cho case Tutor giải thích JTBD, impact hoặc problem discovery.
+- Không dùng lời giảng như bằng chứng rằng học viên đang gặp pain A1.
+
+Checkpoint:
+
+- **CP chính: CP1** — hỗ trợ tư duy chọn vấn đề, job và impact.
+- **CP hỗ trợ: CP3** — nguồn grounding/case kiến thức.
+- **CP hỗ trợ: CP6** — case demo nếu câu hỏi liên quan xác định bài toán.
+
+### `data/vlearn-pack/transcript/transcript-02-clean.md`
+
+Nội dung:
+
+- Day 2: nhận xét impact–effort, problem statement, chỉ số thành công, automation/augmentation và mức kỹ thuật.
+
+Tác dụng:
+
+- Hỗ trợ giải thích vì sao A1 chọn Conditional thay vì Automate hoàn toàn.
+- Giúp nhóm viết metric, quality bar và cost-of-error.
+- Có thể tạo case domain về automation hoặc cách đo sản phẩm.
+
+Checkpoint:
+
+- **CP chính: CP1** — automation dự kiến và lý do.
+- **CP chính: CP4** — automation, metric và quality bar trong spec.
+- **CP hỗ trợ: CP3** — nguồn cho case kiểm thử kiến thức.
+
+### `data/vlearn-pack/transcript/transcript-03-clean.md`
+
+Nội dung:
+
+- Day 2 chiều: LLM, tool calling, RAG, metric, chi phí, hậu quả sai, bảo mật, scope và ODD.
+
+Tác dụng:
+
+- Là nguồn tốt để cụ thể hóa bốn lớp chỗ khó.
+- Giúp tách phần deterministic khỏi LLM và xác định khi nào phải chuyển người.
+- Có thể tạo case nguồn, phạm vi, bảo mật và cost-of-error.
+
+Checkpoint:
+
+- **CP chính: CP4** — taxonomy rủi ro, automation và phạm vi vận hành.
+- **CP hỗ trợ: CP3** — case khó cho golden set.
+- **CP hỗ trợ: CP6** — giải thích failure nguy hiểm nhất khi Q&A.
+
+### `data/vlearn-pack/transcript/transcript-04-clean.md`
+
+Nội dung:
+
+- Day 1 Foundation: lịch sử AI, token/context, Transformer, attention, RLHF, temperature và Agent.
+
+Tác dụng:
+
+- Là nguồn kiến thức nền cho happy path của Tutor.
+- Dùng tạo case phân biệt thuật ngữ kỹ thuật và kiểm tra citation/grounding.
+- Phù hợp demo một câu hỏi kiến thức có nguồn rõ.
+
+Checkpoint:
+
+- **CP hỗ trợ: CP2** — seed nội dung cho flow Mock.
+- **CP chính: CP3** — nguồn grounding và golden case kỹ thuật.
+- **CP hỗ trợ: CP6** — happy path live có nội dung dễ hiểu.
+
+### `data/vlearn-pack/transcript/transcript-05-clean.md`
+
+Nội dung:
+
+- Chọn bài toán, workflow, AI product life cycle, problem scoping, data, baseline và build–eval.
+
+Tác dụng:
+
+- Hỗ trợ thiết kế quy trình golden set và vòng lặp eval.
+- Giúp nhóm hiểu baseline, phân tách lỗi data/prompt/product và chọn failure cần sửa.
+- Có thể dùng làm nguồn cho case Tutor về đánh giá sản phẩm AI.
+
+Checkpoint:
+
+- **CP chính: CP3** — tư duy build–eval và baseline.
+- **CP chính: CP4** — mô tả phương pháp kiểm thử trong spec §7.
+- **CP hỗ trợ: CP6** — giải thích vì sao kết quả thấp vẫn có giá trị nếu phân tích trung thực.
+
+### `data/vlearn-pack/transcript/transcript-06-clean.md`
+
+Nội dung:
+
+- Foundation chuyên sâu hơn về Transformer, self-attention, Q–K–V và ví dụ trực quan.
+
+Tác dụng:
+
+- Tạo case kỹ thuật có nguồn rõ, nhất là Attention/Transformer.
+- Hữu ích cho happy path hoặc case domain phân biệt thuật ngữ.
+- Không phải nguồn evidence pain; chỉ là nguồn kiến thức.
+
+Checkpoint:
+
+- **CP chính: CP3** — grounding và golden case.
+- **CP hỗ trợ: CP2** — dữ liệu mẫu cho UI.
+- **CP hỗ trợ: CP6** — case live kiến thức nếu nhóm cần case dễ quan sát.
+
+
+## 8.3. Thư mục `eval/` — bộ kiểm thử, runner và trace
+
+### Vai trò chung
+
+`eval/` là artifact chính của CP3 và R4. Nó trả lời:
+
+- Hệ thống phải xử lý những tình huống nào?
+- “Tốt” được định nghĩa ra sao?
+- Prototype đã qua bao nhiêu case?
+- Failure nào vẫn còn?
+
+`eval/` không thay thế `validation/`. Eval kiểm tra hệ thống theo case; validation CP5 quan sát người thật dùng prototype.
+
+### `eval/README.md`
+
+Tác dụng:
+
+- Trang chỉ dẫn của toàn bộ thư mục eval.
+- Ghi trạng thái hiện tại, cơ cấu case, quality bar đề xuất, contract input/output, cách chấm và cách chạy.
+- Ghi rõ chưa có lượt eval chính thức vì chưa có endpoint prototype.
+
+Checkpoint:
+
+- **CP chính: CP3** — TA/người trong nhóm biết cách chạy và đọc artifact.
+- **CP chính: CP4** — nguồn để viết spec §7 và chứng minh phương pháp tái lập.
+- **CP hỗ trợ: CP6** — tra lại số liệu/cách đo khi chuẩn bị slide.
+
+### `eval/evidence-audit.md`
+
+Tác dụng:
+
+- Kiểm lại hai tuyên bố `237/1.261 fail` và `37/70 down`.
+- Ghi số tái lập được, regex, độ phủ rating và cách diễn đạt evidence an toàn.
+- Nêu điều kiện cần có nếu nhóm muốn giữ con số 237.
+
+Checkpoint:
+
+- **CP chính: CP1** — tránh dùng số pain chưa có phương pháp kiểm lại.
+- **CP chính: CP4** — đưa evidence đã review và giới hạn rating vào spec §1–§2.
+- **CP hỗ trợ: CP6** — tránh trình bày sai mối quan hệ giữa failure và rating.
+
+### `eval/candidate-pool.csv`
+
+Tác dụng:
+
+- Lưu 30 turn ứng viên đã mining, gồm 20 turn được chọn và 10 turn bị loại.
+- Chứng minh golden set không được chọn tùy ý hoặc chỉ gồm case dễ.
+- Lưu lý do chọn/loại để người khác kiểm lại.
+
+Checkpoint:
+
+- **CP chính: CP3** — đầu vào để xây golden set ≥20.
+- **CP hỗ trợ: CP4** — giải thích phương pháp chọn case và độ phủ.
+- **CP hỗ trợ: CP6** — trả lời câu hỏi “vì sao chọn các case này?”.
+
+### `eval/golden-set-v2.json`
+
+Tác dụng:
+
+- Artifact trung tâm gồm 20 case A1.
+- Mỗi case có document/trang mục tiêu, candidate chunks gồm cả nguồn nhiễu, route mong đợi, citation cho phép, must-have, must-not và scoring note.
+- Cơ cấu hiện tại: 8 normal, 8 hard, 4 rare; 15 real + 5 adapted; mỗi route có 5 case.
+- Có 10 case bắt buộc cite đúng document + page và ít nhất 6 case có nguồn nhiễu/sai trang.
+
+Checkpoint:
+
+- **CP chính: CP3** — artifact bắt buộc golden set ≥20.
+- **CP chính: CP4** — chứng minh độ phủ bốn lớp và định nghĩa chất lượng.
+- **CP hỗ trợ: CP6** — chọn một case chuẩn và một case lỗi để demo.
+
+Trạng thái:
+
+- Đang là `draft_pending_peer_review`.
+- Chưa đổi thành approved trước khi Bảo, Khánh Linh và Thu review.
+- Không sửa expected behavior chỉ để khớp output model.
+
+### `eval/golden-set-check.md`
+
+Tác dụng:
+
+- Lưu kết quả kiểm máy của golden set: 20 source ref đều truy được, cơ cấu 8/8/4, 10 case exact-page và 7 case nhiễu.
+- Ghi rõ phần nào vẫn cần người review và số 237 chưa được xác minh.
+
+Checkpoint:
+
+- **CP chính: CP3** — bằng chứng golden set đã được kiểm cấu trúc.
+- **CP hỗ trợ: CP4** — trỏ vào spec §7 khi mô tả độ phủ.
+
+### `eval/golden-set-review.csv`
+
+Tác dụng:
+
+- Checklist 20 case để hai người copy ra hai bản và review độc lập.
+- Buộc kiểm source, độ tự nhiên của input, route, citation và must/must-not trước khi approve.
+
+Checkpoint:
+
+- **CP chính: CP3** — khóa golden set trước khi xem output prototype.
+- **CP hỗ trợ: CP4** — lưu reviewer và quyết định sửa case có thể phúc khảo.
+
+### `eval/calibration-current-tutor.md`
+
+Tác dụng:
+
+- Chấm thử năm output Tutor cũ bằng rubric mới để phát hiện tiêu chí còn mơ hồ.
+- Kết quả nháp hiện là 3/5 pass.
+- Chỉ dùng hiệu chỉnh người chấm; không phải lượt đo prototype Context Rescue.
+
+Checkpoint:
+
+- **CP chính: CP3** — đáp ứng bước “hai người hiểu tiêu chí giống nhau” trước khi đo.
+- **CP hỗ trợ: CP4** — làm rõ định nghĩa groundedness/recovery trong spec.
+- Không dùng 60% này trên slide CP6 như kết quả prototype.
+
+### `eval/run-template.csv`
+
+Tác dụng:
+
+- Mẫu bảng chấm từng lượt chạy.
+- Có model, prompt version, route, raw output, tám chiều pass/fail, reviewer, failure label và note.
+- Hiện chỉ có hàng tiêu đề; chưa phải kết quả.
+
+Checkpoint:
+
+- **CP chính: CP3** — copy thành `run-01-baseline.csv` và điền đủ 20 case.
+- **CP chính: CP4** — bảng kết quả là artifact của spec §7.
+- **CP hỗ trợ: CP6** — lấy pass rate và failure cho slide 4.
+
+### `eval/validate-golden-set.mjs`
+
+Tác dụng:
+
+- Kiểm tra cấu trúc golden set tự động.
+- Bắt lỗi thiếu case, trùng `case_id`, thiếu field, sai cơ cấu, source ref không tồn tại, expected chunk/citation không khớp candidate.
+- Đã chạy thành công với trạng thái `VALID`.
+
+Checkpoint:
+
+- **CP chính: CP3** — tự soát trước khi TA kiểm golden set.
+- **CP hỗ trợ: CP4** — tăng khả năng tái lập và bảo vệ artifact không bị sửa hỏng.
+- Không kiểm tra chất lượng ngữ nghĩa của case; peer review vẫn bắt buộc.
+
+### `eval/run-eval.mjs`
+
+Tác dụng:
+
+- Runner gọi endpoint prototype tuần tự cho đủ 20 case.
+- Ghi model, prompt version, input, output, latency và lỗi gọi vào tệp raw JSON.
+- Kiểm tra output có `route`, `answer`, citation cấu trúc và `used_chunk_ids`.
+
+Checkpoint:
+
+- **CP chính: CP3** — tạo raw trace cho lượt AI thật và lượt đo đầu.
+- **CP chính: CP4** — giữ bằng chứng model/prompt/output để tái kiểm.
+- **CP hỗ trợ: CP6** — có thể dùng lại quy trình cho một bản chạy final; không tự thay thế live judge case.
+
+Trạng thái:
+
+- Đã kiểm tra cú pháp.
+- Chưa thể chạy chính thức vì workspace chưa có endpoint/prompt/API.
+- Khi endpoint sẵn sàng, lệnh chạy được ghi trong `eval/README.md`.
+
+### `eval/score-structural.mjs`
+
+Tác dụng:
+
+- Đọc raw run và tự kiểm route, page-priority, citation đúng document + page và việc loại nguồn nhiễu.
+- Tạo báo cáo structural JSON trước khi người chấm đánh giá groundedness/safety/ngữ nghĩa.
+- Không thay thế chấm nội dung bằng người.
+
+Checkpoint:
+
+- **CP chính: CP3** — kiểm nhanh quyết định trung tâm của A1 trên đủ 20 case.
+- **CP hỗ trợ: CP4** — giữ kết quả kiểm tra có thể tái lập trong spec §7.
+- **CP hỗ trợ: CP6** — cung cấp exact-page citation rate cho slide kết quả.
+
+### `eval/prepare-review.mjs`
+
+Tác dụng:
+
+- Ghép raw output với điểm structural và tạo bảng `*.review.csv`.
+- Điền sẵn phần máy chấm; giữ `TODO` cho groundedness, recovery, safety và answer size.
+
+Checkpoint:
+
+- **CP chính: CP3** — tạo bảng kết quả đủ 20 case để reviewer điền.
+- **CP chính: CP4** — giữ raw output và failure label trong cùng artifact.
+
+### `eval/summarize-review.mjs`
+
+Tác dụng:
+
+- Tính pass rate, exact-page gate, safe-fallback gate và kết quả theo nhóm/lớp.
+- Từ chối công nhận bảng thiếu case, còn TODO, có lỗi gọi, thiếu trace/reviewer hoặc PASS sai logic.
+
+Checkpoint:
+
+- **CP chính: CP3** — tạo phần trăm lượt đo đầu.
+- **CP chính: CP4** — đối chiếu quality bar không đổi.
+- **CP hỗ trợ: CP6** — tạo số liệu cho slide kết quả.
+
+### `eval/results/`
+
+Tác dụng:
+
+- `run-00-blocked.csv`: đủ 20 case nhưng ghi `NOT_RUN` vì chưa có endpoint; không được tính pass rate.
+- `screenshot-smoke.csv`: chấm tạm hai trạng thái trong ảnh; case trong lát cắt fail groundedness vì có claim không nằm trên slide.
+- `README.md` và `screenshot-smoke.md`: giải thích giới hạn để không nhầm smoke test với lượt eval chính thức.
+
+Checkpoint:
+
+- **CP chính: CP3** — trace trung thực về trạng thái chạy hiện tại.
+- Không dùng `run-00-blocked` hoặc smoke test hai ảnh để tuyên bố đã chạy golden set.
+
+
+## 8.4. Thư mục `tham-khao/` — phương pháp JTBD, không phải evidence
+
+### `tham-khao/worksheet-jtbd-day-du.md`
+
+Tác dụng:
+
+- Worksheet nội bộ bằng tiếng Việt để đi từ job executor đến workflow, core JTBD, job stories, alternatives và AI leverage point.
+- Có công thức job statement `verb + object + contextual clarifier`.
+- Dẫn tám bước job map: define → locate → prepare → confirm → execute → monitor → modify → conclude.
+- Nêu rõ file này là đầu vào cho Phiếu nghiệm thu CP1.
+
+Cách dùng cho A1:
+
+- Job executor: học viên đang học và vừa chọn một đoạn.
+- Core job: làm rõ chỗ chưa hiểu mà không rời mạch học.
+- Alternative: hỏi lại, chuyển công cụ, hỏi TA hoặc bỏ qua.
+- AI leverage: quyết định đủ căn cứ/RECOVER/CLARIFY/ESCALATE.
+
+Checkpoint:
+
+- **CP chính: CP1** — hoàn thiện user, job, workflow, alternatives và leverage point.
+- **CP hỗ trợ: CP4** — nội dung được chắt lọc vào spec §1–§2, không chép toàn worksheet.
+- **CP hỗ trợ: CP6** — chuẩn bị slide User & Job và trả lời Q&A.
+
+Không dùng worksheet trống như evidence. Evidence vẫn phải đến từ mining/khảo sát.
+
+### `tham-khao/Strategyn_JTBD_Playbook.pdf`
+
+Tác dụng:
+
+- Tài liệu gốc 48 trang về Jobs-to-be-Done.
+- Chương 1 giải thích lấy “job cần hoàn thành” làm đơn vị phân tích, không lấy sản phẩm hoặc demographic.
+- Chương 2 hướng dẫn xác định job executor và viết functional job độc lập với giải pháp.
+- Chương 3 hướng dẫn tạo job map để tách các bước người dùng đang cố hoàn thành; job map không phải bản đồ thao tác mua/dùng sản phẩm.
+
+Cách đọc cho hackathon:
+
+- Không đọc tuần tự toàn bộ 48 trang.
+- Tra Chương 2 để xác định đúng job executor và mức trừu tượng của job.
+- Tra Chương 3 khi cần vẽ job map/tìm đúng bước Tutor đang fail.
+- Dùng Playbook để sửa cách đặt bài toán, không dùng ví dụ doanh nghiệp trong PDF như evidence cho học viên VLearn.
+
+Checkpoint:
+
+- **CP chính: CP1** — phương pháp chọn user/job và tránh solution-first.
+- **CP hỗ trợ: CP4** — giải thích cơ sở của workflow/JTBD trong spec nếu cần.
+- Không phải artifact bắt buộc của CP2, CP3, CP5 hoặc CP6.
+
+
+## 8.5. Cách dùng các tệp theo thứ tự checkpoint
+
+### Trước và tại CP1
+
+1. Đọc `data/vlearn-pack/README.md` và `DATA_DICTIONARY.md`.
+2. Dùng `chat_history_anonymized_for_hackathon.csv` để mining pain.
+3. Dùng `worksheet-jtbd-day-du.md` và Chương 2–3 của Playbook để chốt job/lát cắt.
+4. Dùng transcript 01–03 như tài liệu học phương pháp, không thay evidence.
+5. Nộp Canvas có số ban đầu, ba willing users và phân công.
+
+### Từ CP1 đến CP2
+
+1. Chọn vài selected text/retrieved chunk từ transcript 04/06 làm dữ liệu Mock.
+2. Build flow PASS/RECOVER/CLARIFY/ESCALATE bấm đi hết được.
+3. Chưa cần chạy eval chính thức nếu AI call chưa có.
+
+### Tại CP3
+
+1. Review `candidate-pool.csv`.
+2. Khóa `golden-set-v2.json` sau peer review.
+3. Chạy `validate-golden-set.mjs`.
+4. Nối endpoint và chạy `run-eval.mjs`.
+5. Copy `run-template.csv` thành bảng kết quả, chấm đủ 20 case.
+6. Giữ raw output, lỗi gọi, case fail và phần trăm.
+
+### Từ CP3 đến CP4
+
+1. Đưa evidence từ chatlog vào spec §1–§2.
+2. Đưa cơ cấu/định nghĩa golden set vào spec §7.
+3. Chốt quality bar trước 23:59.
+4. Dùng transcript 02/03/05 để tự kiểm automation, risk và eval logic.
+5. Không hạ bar hoặc bỏ case sau khi thấy kết quả.
+
+### Tại CP5
+
+1. Dùng failure trong eval để chọn task khó cho người thử.
+2. Tạo `validation/feedback-log` riêng với ≥5 người.
+3. Không dùng `calibration-current-tutor.md` hoặc golden set thay feedback người thật.
+4. Ghi thay đổi từ feedback vào changelog.
+
+### Tại CP6
+
+1. Slide 1: số pain từ chatlog, không dùng số không kiểm được.
+2. Slide 3: demo một case chuẩn và một case lỗi từ golden set.
+3. Slide 4: pass rate của lượt chạy chính thức so với quality bar.
+4. Slide 5: quote từ `validation/`, không lấy output model làm quote người dùng.
+5. Khi Q&A, truy vết được case → `turn_id`/mã đoạn → nguồn → expected behavior → kết quả.
+
+
+## 8.6. Tóm tắt file nào không được dùng thay file nào
+
+- Transcript không thay evidence pain từ chatlog/khảo sát.
+- `DATA_DICTIONARY.md` không thay phương pháp mining thực tế của nhóm.
+- `candidate-pool.csv` không thay golden set.
+- `validate-golden-set.mjs` không thay peer review nội dung.
+- `calibration-current-tutor.md` không thay lượt eval prototype.
+- `run-template.csv` không phải kết quả khi chưa có 20 dòng output.
+- Toàn bộ `eval/` không thay feedback log CP5.
+- Worksheet/Playbook không thay bằng chứng người dùng.
+- Data pack không được commit nguyên vào repo nộp bài hoặc đưa ra ngoài phạm vi hackathon.

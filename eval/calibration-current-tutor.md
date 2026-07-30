@@ -8,6 +8,7 @@ Không được dùng các tỷ lệ dưới đây làm kết quả eval của p
 
 - Output đến từ Tutor hiện tại, không phải prompt/AI call của Context Rescue.
 - Output không có trường `route`, nên route được suy ra thủ công từ nội dung.
+- Output không có `used_chunk_ids` và citation có cấu trúc, nên không dùng calibration này để kết luận `page_priority` hoặc `citation_exact_page`.
 - Mới có một lượt chấm nháp; cần Sinh và một thành viên khác chấm độc lập.
 
 Reviewer nháp: trợ lý AI.

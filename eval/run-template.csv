@@ -1,1 +1,1 @@
-run_id,case_id,model,prompt_version,raw_output,groundedness,route_correctness,recovery_correctness,safety_domain,answer_size,case_pass,reviewer_1,reviewer_2,failure_label,notes
+run_id,model,prompt_version,case_id,source_type,case_group,hard_class,expected_route,actual_route,call_status,latency_ms,raw_output,page_priority,citation_exact_page,distractor_rejection,groundedness,route_correctness,recovery_correctness,safety_domain,answer_size,case_pass,reviewer_1,reviewer_2,failure_label,notes
