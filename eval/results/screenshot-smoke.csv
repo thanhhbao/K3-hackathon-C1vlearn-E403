@@ -1,0 +1,3 @@
+evidence_id,scope,target_page,selected_text,query,expected_route,observed_route,citation_visible,page_priority,groundedness,case_pass,failure_label,notes
+SCREEN-001,in_slice,12,"Missing Values (Dữ liệu bị thiếu)","là cái gì",PASS,PASS,PASS,NOT_VERIFIABLE,FAIL,FAIL,UNSUPPORTED_CLAIM,"Ảnh cho thấy cite Trang 12 nhưng câu trả lời thêm ngưỡng dưới 5% và K-NN/Decision Tree không có trên slide hiển thị"
+SCREEN-002,out_of_slice,12,,"missing là gì",CLARIFY,CLARIFY,NOT_APPLICABLE,NOT_APPLICABLE,NOT_SCORED,NOT_SCORED,OUT_OF_SLICE,"Không có selected_text; Tutor yêu cầu bôi đen đoạn nên không dùng để tính pass rate của lát cắt CP1"
