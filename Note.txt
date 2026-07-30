@@ -1,0 +1,277 @@
+CHIẾN LƯỢC CHỌN PAIN POINT HƯỚNG A/B ĐỂ NHẮM TOP 10/36
+======================================================
+
+Trạng thái: Tài liệu ra quyết định cho mini hackathon.
+Lưu ý: Không pain point nào bảo đảm thứ hạng. Cách tăng xác suất vào top 10 là hoàn thiện chuỗi “bằng chứng → quyết định → prototype → eval → validation”, không phải chọn ý tưởng lớn nhất hoặc làm UI đẹp nhất.
+
+
+1. TOP 10 THỰC SỰ CẦN TỐI ƯU GÌ?
+---------------------------------
+
+- 25 điểm checkpoint: nộp đúng hạn CP1–CP5. Một tính năng nhỏ hoàn chỉnh an toàn hơn một sản phẩm lớn trễ mốc.
+- 56/75 điểm bài nộp nằm ở R1–R4: evidence, impact, lát cắt, thiết kế, case khó và kiểm thử.
+- Chỉ 8 điểm dành trực tiếp cho prototype. UI đẹp không cứu được pain mơ hồ, evidence yếu hoặc eval cảm tính.
+- Pain point tốt phải tạo được cả happy path và failure path đáng xem. Việc hệ thống biết không đoán khi thiếu căn cứ là một phần của sản phẩm.
+
+Bảy điều kiện bắt buộc:
+1. Một vai người dùng cụ thể, không phải “mọi học viên”.
+2. Có số đếm và ít nhất năm ví dụ truy vết được.
+3. Hậu quả diễn đạt được bằng thời gian, điểm, gián đoạn học hoặc niềm tin.
+4. Chỉ có một quyết định AI trung tâm.
+5. Demo được một case chuẩn và một case lỗi trong hai phút.
+6. Viết được tiêu chí pass/fail để hai người chấm độc lập gần giống nhau.
+7. Có ba người đúng vai sẵn sàng thử và tiếp cận được năm người để validation.
+
+Nếu thiếu evidence, một quyết định AI rõ hoặc cách eval thì không chọn, dù ý tưởng nghe hấp dẫn.
+
+
+2. MA TRẬN CHẤM NỘI BỘ
+-----------------------
+
+Mỗi ứng viên chấm 0–5 ở bảy tiêu chí. Đây là công cụ ra quyết định, không phải điểm chính thức và không đưa vào slide như kết quả nghiên cứu.
+
+| Tiêu chí | Câu hỏi |
+|---|---|
+| Evidence | Có số, ví dụ và phương pháp kiểm lại ngay không? |
+| Impact | Hậu quả có cụ thể và đo thêm được không? |
+| Lát cắt | Có đúng một user, một job, một quyết định AI, một kết quả không? |
+| Eval | Có thể tạo ≥20 case và định nghĩa pass/fail rõ không? |
+| Demo | Case chuẩn và case lỗi có khác biệt dễ nhìn không? |
+| Feasibility | Làm end-to-end, có AI call thật mà không cần tích hợp lớn không? |
+| User access | Có đủ willing users và người validation đúng vai không? |
+
+Ngưỡng nội bộ:
+- 30–35: nên chọn.
+- 26–29: chỉ chọn nếu bổ sung evidence còn thiếu ngay trong CP1.
+- ≤25: đưa vào backlog, không dùng cho mini hackathon.
+
+
+3. HƯỚNG A — VLEARN
+====================
+
+3.1. XẾP HẠNG CÁC PAIN POINT
+----------------------------
+
+| Ứng viên | Evidence | Impact | Lát cắt | Eval | Demo | Khả thi | User | Tổng sơ bộ |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| A1 — Tutor không phục hồi được đoạn đã chọn | 5 | 4 | 5 | 5 | 5 | 5 | 5 | 34/35 |
+| A2 — Câu trả lời kiến thức thiếu trích dẫn | 3 | 4 | 5 | 4 | 5 | 5 | 5 | 31/35 |
+| A3 — Tutor gần như không kiểm tra hiểu thật | 2 | 3 | 4 | 3 | 4 | 4 | 5 | 25/35 |
+
+Các điểm trên phải cập nhật sau khi review tay dữ liệu.
+
+
+3.2. PAIN POINT A KHUYẾN NGHỊ: PHỤC HỒI NGỮ CẢNH CÓ CĂN CỨ
+------------------------------------------------------------
+
+Pain một câu:
+> Học viên đang nhờ Tutor giải thích chính đoạn đã chọn nhưng Tutor vẫn báo không tìm thấy nội dung, khiến họ phải nhập lại ngữ cảnh, chuyển công cụ hoặc bỏ qua phần chưa hiểu, làm gián đoạn việc học và giảm niềm tin.
+
+Evidence sơ bộ:
+- 155/1.261 lượt Tutor có mẫu “không tìm thấy/không có thông tin”.
+- 154/155 câu hỏi vẫn chứa “đoạn được chọn”.
+- Liên quan 106/369 học viên trong data pack.
+- Nhóm này có 9/37 lượt đánh giá xuống và 0/33 lượt đánh giá lên.
+- Cần hai người review tay toàn bộ 155 lượt để loại false positive; không được coi tương quan rating là quan hệ nhân quả.
+
+Vì sao phù hợp mini hackathon:
+- Pain xuất hiện ngay trong hành vi trung tâm của Tutor.
+- Không cần dạy người dùng một workflow mới.
+- Có một quyết định AI hẹp: “đủ căn cứ để trả lời hay cần phục hồi/làm rõ”.
+- Dễ lấy ≥10 case thật cho golden set.
+- Dễ demo lỗi: hệ thống cũ từ chối chung chung; prototype giữ ngữ cảnh, trả lời có nguồn hoặc hỏi đúng điều còn thiếu.
+- Có thể làm Mock, không cần sửa VLearn production.
+
+Tên demo gợi ý:
+Context Rescue — “không bắt học viên nói lại điều hệ thống đã thấy”.
+
+Lát cắt một câu:
+> Một học viên chọn một đoạn để hỏi; AI quyết định nguồn hiện có đủ để trả lời hay cần phục hồi ngữ cảnh; học viên nhận câu trả lời có trích dẫn hoặc một bước làm rõ cụ thể mà không phải nhập lại đoạn đã chọn.
+
+Một quyết định AI trung tâm:
+- PASS: đoạn chọn và nguồn truy xuất đủ, khớp nhau → trả lời ngắn kèm trích dẫn.
+- RECOVER: đoạn chọn có ích nhưng retrieval thiếu → trả lời giới hạn theo đoạn chọn và nói rõ giới hạn.
+- CLARIFY/ESCALATE: đoạn chọn quá mơ hồ, xung đột hoặc ngoài nguồn → hỏi đúng một câu hoặc chuyển TA; không đoán.
+
+Hai case demo:
+1. Happy path: học viên chọn một đoạn có định nghĩa rõ; hệ thống giải thích và chỉ đúng mã đoạn/trang.
+2. Failure path: học viên hỏi “giải thích slide này” nhưng kho không chứa slide; hệ thống giữ lại đoạn đã chọn, nói thiếu gì và hỏi một câu cụ thể thay vì yêu cầu nhập lại tất cả.
+
+Ba chiều eval:
+- Groundedness: mọi mệnh đề kiến thức truy được về nguồn hiển thị.
+- Recovery correctness: thiếu/xung đột nguồn thì không đưa khẳng định không được hỗ trợ.
+- Effort reduction: không yêu cầu học viên cung cấp lại thông tin hệ thống đã có.
+
+Quality bar dự kiến để thảo luận, chưa chốt tại CP1:
+- Qua ≥85% toàn bộ golden set.
+- Điều kiện cứng: 100% case thiếu/xung đột nguồn không được bịa câu trả lời hoặc citation.
+- Chỉ chốt chính thức trong spec trước 23:59 ngày 1 và không đổi sau khi thấy kết quả.
+
+Bốn lớp case khó:
+- ① Nguồn sự thật: trang được hỏi không có trong kho hoặc citation trỏ sai đoạn.
+- ② Mơ hồ: “giải thích cái này” nhưng đoạn chọn chỉ là tiêu đề hoặc mô tả thao tác.
+- ③ Ngoài phạm vi: yêu cầu kết luận ngoài học liệu hoặc lấy đáp án bài chấm điểm.
+- ④ Đặc thù domain: lẫn hai thuật ngữ kỹ thuật gần nhau làm học viên hiểu sai bài.
+
+Không chọn A1 nếu:
+- Review tay cho thấy phần lớn 155 lượt là từ chối đúng vì input không có nội dung.
+- Không lấy được ít nhất năm ví dụ cùng một quy tắc pain.
+- Prototype chỉ viết lại lời xin lỗi, không thực sự dùng lại ngữ cảnh hoặc nguồn.
+
+
+3.3. A2 — THIẾU TRÍCH DẪN: PHƯƠNG ÁN DỰ PHÒNG
+----------------------------------------------
+
+Evidence mầm:
+- 582/1.261 câu trả lời có `citations=[]`, tương đương 46,2%.
+- 29/37 lượt đánh giá xuống không có citation.
+
+Rủi ro:
+- Không phải câu nào cũng cần citation; lời chào, động viên hoặc hỏi lại có thể hợp lệ.
+- Chưa có đủ slide để kiểm tra toàn diện citation đúng trang.
+- Không được gọi 46,2% này là “tỷ lệ câu trả lời sai”.
+
+Chỉ chọn A2 khi hai người đã gắn nhãn nhóm “câu hỏi kiến thức bắt buộc có nguồn”, sau đó vẫn tìm thấy số lượng thiếu citation đáng kể và ít nhất năm ví dụ rõ.
+
+
+3.4. A3 — KIỂM TRA HIỂU THẬT: Ý TƯỞNG TỐT NHƯNG RỦI RO
+-------------------------------------------------------
+
+Evidence mầm:
+- `validate_understanding` chỉ xuất hiện 1/1.261 lượt.
+- `asked_check_question=True` rất hiếm.
+- `follow_ups` và `misconceptions` luôn rỗng.
+
+Không ưu tiên A3 nếu chưa khảo sát. “Hệ thống chưa làm” không đồng nghĩa “người dùng đang đau”. Muốn chứng minh tăng hiểu thật còn cần baseline và đo kết quả học tập, khó hoàn thành chắc tay trong 1,5 ngày.
+
+
+4. HƯỚNG B — TRỢ LÝ HỌC VIÊN TRÊN DISCORD
+==========================================
+
+4.1. XẾP HẠNG CÁC PAIN POINT
+----------------------------
+
+Evidence hiện để 0 vì chưa mining Discord. Không chấm cao dựa riêng vào mô tả trong đề.
+
+| Ứng viên | Evidence | Impact | Lát cắt | Eval | Demo | Khả thi | User | Tổng hiện tại |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| B1 — Logistics chỉ từ nguồn chính thức | 0 | 5 | 5 | 5 | 5 | 5 | 5 | 30/35 |
+| B2 — Biết mình không biết + chuyển TA cho mọi intent | 0 | 4 | 3 | 4 | 4 | 4 | 5 | 24/35 |
+| B3 — Nhận diện intent để trả lời đúng cỡ | 0 | 2 | 4 | 3 | 4 | 5 | 5 | 23/35 |
+| B4 — Bản tin câu hỏi tồn cho TA | 0 | 4 | 4 | 4 | 4 | 3 | 2 | 21/35 |
+
+
+4.2. PAIN POINT B KHUYẾN NGHỊ CÓ ĐIỀU KIỆN: LOGISTICS CÓ NGUỒN
+--------------------------------------------------------------
+
+Pain một câu:
+> Học viên đang tìm deadline, link hoặc cách nộp còn hiệu lực nhưng thông báo nằm rải rác và câu trả lời truyền miệng có thể cũ, khiến họ mất thời gian hoặc làm theo thông tin sai và có nguy cơ nộp muộn.
+
+Vì sao có tiềm năng top 10:
+- Sai deadline/link có cost-of-error trực tiếp.
+- Một quyết định AI rõ: có nguồn chính thức hiện hành để trả lời hay không.
+- Eval khách quan hơn “giọng văn hay”: đúng deadline, đúng link, đúng khóa, đúng nguồn hoặc abstain đúng.
+- Failure path nổi bật: nguồn hết hạn hoặc hai thông báo chính thức mâu thuẫn.
+- Prototype chỉ cần kho thông báo mẫu nhỏ, không cần bot Discord production.
+
+Tên demo gợi ý:
+Source-Locked Logistics — “không có nguồn hiện hành thì không đoán”.
+
+Lát cắt một câu:
+> Một học viên hỏi một thông tin logistics của khóa; AI quyết định có nguồn chính thức còn hiệu lực để trả lời hay không; học viên nhận câu trả lời kèm nguồn và thời điểm hiệu lực hoặc được chuyển TA mà không nhận phỏng đoán.
+
+Một quyết định AI trung tâm:
+- ANSWER: đúng một nguồn chính thức, đúng khóa, còn hiệu lực.
+- CLARIFY: thiếu khóa, bài hoặc mốc thời gian để chọn nguồn.
+- ESCALATE: không có nguồn, nguồn hết hạn hoặc nhiều nguồn chính thức mâu thuẫn.
+
+Hai case demo:
+1. Happy path: hỏi hạn nộp CP4; trả đúng thời gian, múi giờ và link thông báo chính thức.
+2. Failure path: hai thông báo có deadline khác nhau hoặc nguồn cũ hết hiệu lực; không chọn bừa, hiển thị mâu thuẫn và chuyển TA.
+
+Bốn chiều eval:
+- Field accuracy: deadline, link, tên bài và khóa khớp nguồn.
+- Source validity: nguồn chính thức và còn hiệu lực tại thời điểm hỏi.
+- Abstention correctness: thiếu/mâu thuẫn nguồn phải hỏi lại hoặc chuyển TA.
+- Answer size: thông tin hành động trước, nguồn sau; không viết dài che mất deadline/link.
+
+Quality bar dự kiến để thảo luận, chưa chốt tại CP1:
+- Qua ≥90% toàn bộ golden set.
+- Điều kiện cứng: 100% case không có/mâu thuẫn nguồn không được bịa deadline hoặc link.
+- Chốt chính thức trong spec trước 23:59 ngày 1.
+
+Bốn lớp case khó:
+- ① Nguồn sự thật: hai thông báo chính thức khác nhau hoặc link cũ.
+- ② Mơ hồ: “deadline bài này?” nhưng không nói tên bài/khóa.
+- ③ Ngoài thẩm quyền: yêu cầu bot gia hạn, xác nhận nộp muộn hoặc sửa điểm.
+- ④ Đặc thù domain: nhầm ngày, múi giờ, checkpoint, khóa hoặc link nộp.
+
+
+4.3. ĐIỀU KIỆN GO/NO-GO CHO B1
+-------------------------------
+
+Vì không có data pack Discord, chỉ chọn B1 sau một vòng mining có log:
+- Chốt kênh và khoảng thời gian trước khi đếm.
+- Đọc 30–50 tin để định nghĩa nhãn, sau đó đếm trên toàn bộ mẫu đã chốt.
+- Có số câu logistics, tỷ lệ hỏi lặp/chờ lâu/không có nguồn và ít nhất năm ví dụ nguyên văn.
+- Có ba học viên xác nhận đã gặp pain và đồng ý thử.
+- Có kho nguồn chính thức đủ tạo happy path, nguồn hết hạn và nguồn mâu thuẫn.
+
+Ngưỡng nội bộ, không phải yêu cầu của rubric:
+- Mẫu đã chốt có ít nhất 15 câu logistics.
+- Có ít nhất năm case thể hiện cùng một vấn đề: hỏi lặp, khó tìm nguồn, phản hồi chậm hoặc nguồn cũ/mâu thuẫn.
+- Nếu không đạt, không chọn B chỉ vì “nghe nguy hiểm”; quay về A1 vì evidence chắc hơn.
+
+
+4.4. VÌ SAO KHÔNG ƯU TIÊN B2/B3/B4?
+------------------------------------
+
+- B2 quá rộng: mỗi intent có nguồn và failure khác nhau, golden set dễ loãng.
+- B3 dễ build nhưng cost-of-error của phân loại sai lời chào thường thấp; “đúng cỡ” khó chấm thống nhất.
+- B4 có user là TA nhưng khó tuyển đủ người đúng vai; dễ thành tính năng tóm tắt thông thường nếu không chứng minh được câu hỏi tồn gây quá tải.
+
+
+5. QUYẾT ĐỊNH A HAY B
+=====================
+
+| Điều kiện thực tế | Nên chọn |
+|---|---|
+| Chưa mining Discord hoặc chưa có năm ví dụ rõ | A1 |
+| A1 review tay vẫn có số mạnh, nhóm muốn chắc R1/R4 | A1 |
+| Discord có pain logistics lặp rõ, có nguồn và willing users | B1 |
+| Nhóm mạnh kỹ thuật nhưng evidence Discord yếu | A1; kỹ thuật không thay thế evidence |
+| Muốn demo cost-of-error cao nhất và B1 đã qua go/no-go | B1 |
+| Chỉ còn dưới một giờ để chốt CP1 | A1 |
+
+Khuyến nghị tại thời điểm hiện tại:
+1. Nếu phải quyết định ngay, chọn A1: evidence có sẵn, lát cắt hẹp, eval rõ và rủi ro build thấp.
+2. Cho B1 một vòng mining Discord giới hạn thời gian; chỉ chuyển sang B1 khi vượt điều kiện go/no-go.
+3. Không build song song A và B sau CP1. Giữ hướng thua làm “ứng viên đã loại” trong bảng impact để chứng minh chuỗi quyết định.
+
+
+6. KẾ HOẠCH 60 PHÚT CHỐT PAIN POINT
+===================================
+
+- Phút 0–15: hai người review độc lập 30–50 case A1; hai người khác đọc 30–50 tin Discord để tạo nhãn B1.
+- Phút 15–30: đếm theo quy tắc đã chốt, giữ mã ít nhất năm ví dụ mỗi ứng viên.
+- Phút 30–40: điền bảng impact với số người, tần suất, thời gian/hậu quả và khả năng build.
+- Phút 40–50: xác nhận ba willing users cho từng hướng còn lại.
+- Phút 50–55: chấm ma trận 0–5; mọi điểm phải giải thích bằng evidence.
+- Phút 55–60: chốt một hướng, ghi ứng viên bị loại và phân công có họ tên.
+
+
+7. CHECKLIST BẢO VỆ MỤC TIÊU TOP 10
+===================================
+
+- [ ] Nộp đúng hạn mọi checkpoint để giữ 25 điểm.
+- [ ] Pain có số đếm, phương pháp và ≥5 ví dụ.
+- [ ] Bảng impact có ≥3 ứng viên và giữ lại ứng viên bị loại.
+- [ ] Lát cắt chỉ một câu, khớp chính xác bản build.
+- [ ] Có ≥3 non-goals để chống phình scope.
+- [ ] AI call thật nằm ở quyết định trung tâm.
+- [ ] Golden set phủ đủ bốn lớp chỗ khó, không chỉ happy path.
+- [ ] Mỗi lượt sửa chạy lại toàn bộ test và giữ cả case fail.
+- [ ] Validation giao task rồi im lặng quan sát, không dẫn người thử.
+- [ ] Demo một case chuẩn và một case lỗi, có % so với quality bar.
+- [ ] Sau CP4 không thêm feature; chỉ sửa failure lớn nhất.
+- [ ] Mỗi thành viên giải thích được phần có tên mình.

@@ -1,0 +1,31 @@
+candidate_id,turn_id,pattern,selected_for_golden,case_id,decision_reason
+C001,T0645,rich_selection_with_valid_citation,yes,A-N-001,Happy path rõ và có nguồn ngắn
+C002,T0295,rich_selection_with_valid_citation,yes,A-N-002,Giải thích pain point bám nguồn
+C003,T0299,rich_selection_retrieval_gap,yes,A-N-003,Đo khả năng RECOVER từ selected_text
+C004,T0881,rich_selection_retrieval_gap,yes,A-N-004,Đo RECOVER và phân biệt model với product
+C005,T1115,rich_selection_retrieval_gap,yes,A-N-005,Đo RECOVER với taxonomy ba phần
+C006,T0419,rich_selection_with_valid_citation,yes,A-N-006,Happy path so sánh ba hệ thống
+C007,T0642,rich_selection_no_citation,yes,A-N-007,Selected_text đủ dù retrieval rỗng
+C008,T0613,rich_selection_no_citation,yes,A-N-008,Selected_text là bảng có thể phục hồi
+C009,T0649,missing_source_generic_refusal,yes,A-H1-001,Case nguồn trống đúng pain A1
+C010,T1258,wrong_retrieval_same_number,yes,A-H1-002,Case retrieval lệch do trùng số 33
+C011,T0115,unknown_or_typo_term,yes,A-H2-001,Case mơ hồ cần hỏi lại
+C012,T0581,truncated_domain_term,yes,A-H2-002,Case Othello-GP cần xác nhận
+C013,T0837,request_for_lab_answer,yes,A-H3-001,Case vượt phạm vi học tập
+C014,T0432,secret_and_api_key_request,yes,A-H3-002,Case vượt thẩm quyền và prompt injection
+C015,T0556,domain_misconception_react_trace,yes,A-H4-001,Phát triển thành hiểu lầm domain
+C016,T0537,domain_misconception_api_compatibility,yes,A-H4-002,Phát triển thành hiểu lầm SDK
+C017,T0674,encoded_secret_prompt_injection,yes,A-R-001,Case hiếm có guardrail
+C018,T0470,internal_model_version_injection,yes,A-R-002,Case hiếm ngoài phạm vi
+C019,T0692,long_noisy_multi_page_selection,yes,A-R-003,Case hiếm có nhiễu giao diện
+C020,"T0179,T0581",conflicting_sources_same_topic,yes,A-R-004,Phát triển conflict từ hai lượt thật
+C021,T0370,very_long_bibliography_selection,no,,Quá nhiều chủ đề và khó chấm trong một case
+C022,T0263,whole_deck_text_in_selection,no,,Input nhiễu dài trùng mục tiêu A-R-003
+C023,T0255,time_sensitive_model_market_claims,no,,Cần kiểm chứng ngoài data pack
+C024,T0051,rich_selected_text_with_citation,no,,Happy path tốt nhưng đã đủ sáu case PASS
+C025,T0097,page_and_citation_mismatch_candidate,no,,Cần slide gốc để xác định citation đúng
+C026,T0589,multimodal_explanation_with_citation,no,,Trùng loại happy path giải thích khái niệm
+C027,T0269,multi_topic_takeaways,no,,Quá rộng và khó xác định một hành vi chính
+C028,T1092,agent_pattern_progression,no,,Trùng happy path kiến thức kỹ thuật
+C029,T0769,missing_page_generic_refusal,no,,Trùng trigger với A-H1-001
+C030,T0399,visual_diagram_not_available,no,,Cần dữ liệu hình ảnh prototype chưa có
