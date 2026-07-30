@@ -1,4 +1,4 @@
-# AI SPEC — Context Rescue: Page-Priority Tutor · Nhóm [XX] · Zone [X]
+# AI SPEC — Context Rescue: Page-Priority Tutor · Nhóm C1vlearn
 Hướng: [x] A — VLearn
 Loại: [x] Tối ưu tính năng có sẵn
 
