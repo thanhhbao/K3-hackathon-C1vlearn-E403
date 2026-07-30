@@ -13,13 +13,37 @@
 - Tạo bảng để người chấm bổ sung điểm ngữ nghĩa: `prepare-review.mjs`.
 - Tổng hợp pass rate và quality gate: `summarize-review.mjs`.
 - Checklist review golden set: `golden-set-review.csv`.
-- Trace lần chuẩn bị chưa có endpoint: `results/run-00-blocked.csv`.
+- Smoke suite của Mock hiện tại: `codebase-smoke-v1.json`.
+- Runner đọc trực tiếp logic hardcode: `run-codebase-smoke.mjs`.
+- Audit codebase và kết quả smoke: `results/codebase-audit.md`, `results/codebase-smoke-v1.csv`.
+- Trace golden set chưa chạy được: `results/run-00-blocked.csv`.
 - Calibration trên năm output Tutor cũ: `calibration-current-tutor.md` — 3/5 pass nháp, chờ hai người xác nhận.
 - Lượt eval prototype chính thức: **chưa chạy**.
 
-Lý do chưa chạy: workspace chưa có `codebase/`, prompt, endpoint AI hoặc biến môi trường API. Không dùng output tự tạo thay cho AI call thật.
+Lý do chưa có lượt golden set chính thức: `codebase/` hiện là Mock DOM tĩnh, không có endpoint, prompt hoặc lời gọi AI. `app.js` dùng `setTimeout` và ba câu trả lời hardcode; context/citation cố định ở Trang 12. Không dùng output mock thay cho AI call thật.
 
 `results/run-00-blocked.csv` có đủ 20 `case_id` nhưng tất cả là `NOT_RUN`. Tệp này ghi lại blocker, không phải lượt eval được tính điểm.
+
+## Codebase hiện tại so với yêu cầu CP1
+
+Chạy:
+
+```powershell
+node eval/run-codebase-smoke.mjs
+```
+
+Kết quả smoke: **2/5 pass (40,0%)**. Đây chỉ là kiểm tra Mock:
+
+| Yêu cầu | Codebase hiện tại |
+|---|---|
+| Bôi đen và đính kèm context | Có, nhưng chỉ một đoạn cố định |
+| Dùng số trang làm ưu tiên retrieval | Chưa có retrieval/candidate chunks/trace |
+| Cite đúng trang | Hiển thị Trang 12 hardcode |
+| Conditional automation | Có hai nhánh fallback hardcode |
+| AI call thật | Không |
+| Câu trả lời grounded theo slide | Chưa; thêm “dưới 5%”, “K-NN/Decision Tree” ngoài slide |
+
+Smoke suite không thay `golden-set-v2.json`. Muốn chạy golden set, prototype phải tách quyết định Tutor thành endpoint/pure function theo contract bên dưới.
 
 ## Cơ cấu hiện tại
 

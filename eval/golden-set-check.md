@@ -26,6 +26,8 @@ node eval/validate-golden-set.mjs
 
 Golden set đạt cấu trúc của rubric và đo đúng cơ chế page-priority của lát cắt CP1. Golden set vẫn là `draft_pending_peer_review`; kiểm máy không thay review nội dung.
 
+`codebase/app.js` hiện chưa nhận contract của golden set: chỉ có một context cố định Trang 12 và câu trả lời hardcode. Vì vậy golden set không được thu hẹp theo Mock; codebase phải được nâng lên để nhận đủ input.
+
 Trước khi khóa:
 
 1. Hai người chấm độc lập bằng hai bản copy của `golden-set-review.csv`.

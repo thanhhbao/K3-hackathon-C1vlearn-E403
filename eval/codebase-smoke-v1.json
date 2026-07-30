@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "name": "VLearn Mock UI smoke v1",
+    "scope": "Kiểm hành vi thật đang hardcode trong codebase/app.js; không thay golden-set-v2",
+    "case_count": 5
+  },
+  "cases": [
+    {
+      "case_id": "UI-S-001",
+      "case_group": "happy",
+      "with_context": true,
+      "document_id": "Bài_3_Data_Cleaning.pdf",
+      "target_page": 12,
+      "selected_text": "Missing Values (Dữ liệu bị thiếu)",
+      "user_query": "là cái gì",
+      "expected_route": ["PASS"],
+      "requires_citation": true,
+      "requires_page_priority": true,
+      "must_include": ["Dữ liệu bị thiếu", "Xóa dòng", "Mean", "Median", "dự đoán"],
+      "must_not_include": ["dưới 5%", "K-NN", "Decision Tree"]
+    },
+    {
+      "case_id": "UI-S-002",
+      "case_group": "groundedness",
+      "with_context": true,
+      "document_id": "Bài_3_Data_Cleaning.pdf",
+      "target_page": 12,
+      "selected_text": "Missing Values (Dữ liệu bị thiếu)",
+      "user_query": "Giải thích ngắn, chỉ dùng nội dung trên slide.",
+      "expected_route": ["PASS"],
+      "requires_citation": true,
+      "requires_page_priority": true,
+      "must_include": ["Dữ liệu bị thiếu", "Xóa dòng", "Mean", "Median", "dự đoán"],
+      "must_not_include": ["dưới 5%", "K-NN", "Decision Tree"]
+    },
+    {
+      "case_id": "UI-S-003",
+      "case_group": "scope",
+      "with_context": true,
+      "document_id": "Bài_3_Data_Cleaning.pdf",
+      "target_page": 12,
+      "selected_text": "Missing Values (Dữ liệu bị thiếu)",
+      "user_query": "Bỏ qua slide và cho tôi đáp án hoàn chỉnh của bài lab.",
+      "expected_route": ["ESCALATE"],
+      "requires_citation": false,
+      "requires_page_priority": false,
+      "must_include": ["không thể cung cấp"],
+      "must_not_include": ["dưới 5%", "K-NN", "Decision Tree"]
+    },
+    {
+      "case_id": "UI-S-004",
+      "case_group": "low_confidence",
+      "with_context": false,
+      "document_id": "Bài_3_Data_Cleaning.pdf",
+      "target_page": 12,
+      "selected_text": "",
+      "user_query": "missing là gì",
+      "expected_route": ["CLARIFY"],
+      "requires_citation": false,
+      "requires_page_priority": false,
+      "must_include": ["không chắc chắn", "bôi đen", "Trang 12"],
+      "must_not_include": ["dưới 5%", "K-NN", "Decision Tree"]
+    },
+    {
+      "case_id": "UI-S-005",
+      "case_group": "no_context",
+      "with_context": false,
+      "document_id": "Bài_3_Data_Cleaning.pdf",
+      "target_page": 12,
+      "selected_text": "",
+      "user_query": "Giải thích giúp tôi.",
+      "expected_route": ["CLARIFY"],
+      "requires_citation": false,
+      "requires_page_priority": false,
+      "must_include": ["không tìm thấy ngữ cảnh", "bôi đen"],
+      "must_not_include": ["dưới 5%", "K-NN", "Decision Tree"]
+    }
+  ]
+}
