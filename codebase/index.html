@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLearn - AI Tutor Prototype (Tối ưu Context)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="btn-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 22h20L12 2z" fill="#EF4444"/><path d="M12 2L2 22h10l10-10L12 2z" fill="#3B82F6"/></svg>
+                    <span>VLearn</span>
+                </div>
+                <div class="doc-info">
+                    <div class="doc-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    </div>
+                    <div class="doc-titles">
+                        <h1>Bài_3_Data_Cleaning.pdf</h1>
+                        <h2>Khóa học AI Thực chiến · Foundation</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-outline">VI</button>
+                <button class="btn-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+                <button class="btn-user">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Học viên (Ẩn danh)
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN BODY -->
+        <main class="app-body">
+            <!-- LEFT: PDF VIEWER -->
+            <section class="pdf-viewer">
+                <!-- PDF Toolbar -->
+                <div class="pdf-toolbar">
+                    <div class="toolbar-group">
+                        <button class="btn-toolbar active">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            Đọc
+                        </button>
+                        <button class="btn-toolbar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                            Bút
+                        </button>
+                        <button class="btn-toolbar highlight">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                            Highlight
+                        </button>
+                        <button class="btn-icon">...</button>
+                    </div>
+                    
+                    <div class="toolbar-group page-controls">
+                        <span class="page-num">Trang 12 · 0 note</span>
+                        <div class="zoom-controls">
+                            <button class="btn-icon">-</button>
+                            <span>100%</span>
+                            <button class="btn-icon">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PDF Canvas -->
+                <div class="pdf-canvas" id="pdf-canvas">
+                    <!-- Tooltip nổi lên khi click vào chữ bôi đen -->
+                    <div id="action-tooltip" class="action-tooltip hidden">
+                        <button class="tooltip-btn ask-ai" id="btn-ask-ai">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+                            Hỏi AI
+                        </button>
+                    </div>
+
+                    <!-- Slide container -->
+                    <div class="slide-wrapper">
+                        <div class="slide-header-bar">
+                            <h2>Bài 3: Xử lý dữ liệu</h2>
+                            <span class="uni-logo">VLEARN ACADEMY</span>
+                        </div>
+                        <div class="slide-content">
+                            <h3>Kỹ thuật Data Cleaning cơ bản</h3>
+                            <p style="margin-top: 16px; margin-bottom: 24px;">Trong quá trình xử lý dữ liệu thực tế, làm sạch dữ liệu đóng vai trò sống còn trước khi đưa vào huấn luyện mô hình.</p>
+                            <ul>
+                                <li>Một trong những vấn đề thường gặp nhất là <span class="highlight-text" id="target-text">Missing Values (Dữ liệu bị thiếu)</span>.</li>
+                                <li><strong>Cách xử lý:</strong> Xóa dòng, Điền khuyết (Mean, Median), hoặc dùng Mô hình dự đoán.</li>
+                                <li>Việc chọn phương pháp phụ thuộc rất lớn vào phân phối của dữ liệu bài toán cụ thể.</li>
+                            </ul>
+                        </div>
+                        <div class="slide-footer-bar">
+                            <span>Giảng viên (Khóa 3)</span>
+                            <span>Foundation - Bài 3</span>
+                            <span>Trang 12/45</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-side-nav left"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+                    <button class="btn-side-nav right"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+                </div>
+
+                <!-- PDF Footer -->
+                <div class="pdf-footer">
+                    <button class="btn-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+                    <span class="page-status">Trang <strong>12</strong> / 45</span>
+                    <button class="btn-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+                </div>
+            </section>
+
+            <!-- RIGHT: TUTOR SIDEBAR -->
+            <aside class="tutor-sidebar">
+                <header class="tutor-header">
+                    <div class="tutor-avatar">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+                        <div class="status-dot"></div>
+                    </div>
+                    <div class="tutor-info">
+                        <h2>VLearn Tutor</h2>
+                        <span class="subtitle">Trợ lý học theo ngữ cảnh</span>
+                    </div>
+                    <div class="tutor-actions">
+                        <span class="badge-outline">Trong slide: 12</span>
+                    </div>
+                </header>
+
+                <div class="chat-container" id="chat-container">
+                    <!-- Tin nhắn chào mừng -->
+                    <div class="message ai-message">
+                        <div class="bubble">
+                            Chào bạn! Tôi là VLearn Tutor. 
+                            <br><br>
+                            Bạn đang học <strong>Bài 3: Xử lý dữ liệu</strong>. Nếu có phần nào không hiểu, bạn hãy bôi đen trực tiếp trên slide để tôi hỗ trợ chính xác theo ngữ cảnh nhé!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="input-wrapper">
+                        <!-- Vùng context chuẩn bị gửi -->
+                        <div id="pending-context" class="pending-context hidden">
+                            <div class="context-label">Đang đính kèm ngữ cảnh (Trang 12)</div>
+                            <div class="context-text">"Missing Values (Dữ liệu bị thiếu)"</div>
+                            <button id="btn-clear-context" class="btn-clear-context">✕</button>
+                        </div>
+                        <div class="input-controls">
+                            <textarea id="chat-input" placeholder="Gõ câu hỏi của bạn..." rows="1"></textarea>
+                            <button id="btn-send" class="btn-send" disabled>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
