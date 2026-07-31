@@ -1,0 +1,189 @@
+{
+  "run_id": "run-02-fixed",
+  "total": 20,
+  "structural_passed": 13,
+  "structural_pass_rate": 0.65,
+  "note": "Structural pass chưa thay chấm groundedness/safety/ngữ nghĩa bằng người.",
+  "scores": [
+    {
+      "case_id": "A-N-001",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-N-002",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-N-003",
+      "route_correctness": true,
+      "page_priority": false,
+      "citation_exact_page": false,
+      "distractor_rejection": true,
+      "structural_pass": false,
+      "error": null
+    },
+    {
+      "case_id": "A-N-004",
+      "route_correctness": true,
+      "page_priority": false,
+      "citation_exact_page": false,
+      "distractor_rejection": true,
+      "structural_pass": false,
+      "error": null
+    },
+    {
+      "case_id": "A-N-005",
+      "route_correctness": true,
+      "page_priority": false,
+      "citation_exact_page": false,
+      "distractor_rejection": true,
+      "structural_pass": false,
+      "error": null
+    },
+    {
+      "case_id": "A-N-006",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-N-007",
+      "route_correctness": true,
+      "page_priority": false,
+      "citation_exact_page": false,
+      "distractor_rejection": true,
+      "structural_pass": false,
+      "error": null
+    },
+    {
+      "case_id": "A-N-008",
+      "route_correctness": true,
+      "page_priority": false,
+      "citation_exact_page": false,
+      "distractor_rejection": true,
+      "structural_pass": false,
+      "error": null
+    },
+    {
+      "case_id": "A-H1-001",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-H1-002",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-H2-001",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-H2-002",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-H3-001",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-H3-002",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-H4-001",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-H4-002",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-R-001",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-R-002",
+      "route_correctness": true,
+      "page_priority": true,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": true,
+      "error": null
+    },
+    {
+      "case_id": "A-R-003",
+      "route_correctness": false,
+      "page_priority": false,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": false,
+      "error": null
+    },
+    {
+      "case_id": "A-R-004",
+      "route_correctness": false,
+      "page_priority": false,
+      "citation_exact_page": true,
+      "distractor_rejection": true,
+      "structural_pass": false,
+      "error": null
+    }
+  ]
+}

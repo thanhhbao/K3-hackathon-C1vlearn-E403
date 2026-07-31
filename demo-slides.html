@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Demo — C1vlearn</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0d1117;
+    color: #eee;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .slides-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    background: #16213e;
+  }
+
+  .slide.active { display: flex; }
+
+  .slide-number {
+    position: absolute;
+    bottom: 20px; right: 30px;
+    font-size: 14px;
+    color: #444;
+  }
+
+  .tag {
+    display: inline-block;
+    background: #e94560;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: fit-content;
+  }
+
+  h1 { font-size: 38px; color: #fff; margin-bottom: 10px; line-height: 1.2; }
+  h2 { font-size: 18px; color: #8892b0; margin-bottom: 28px; font-weight: 400; }
+
+  .stats-row { display: flex; gap: 24px; margin: 20px 0; }
+
+  .stat-box {
+    background: #0f3460;
+    border-radius: 12px;
+    padding: 20px 28px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .stat-box .num {
+    font-size: 42px;
+    font-weight: 800;
+    color: #e94560;
+  }
+
+  .stat-box .label { font-size: 14px; color: #8892b0; margin-top: 4px; }
+  .stat-box .sub { font-size: 12px; color: #444; margin-top: 4px; }
+
+  .highlight {
+    background: #0f3460;
+    border-left: 4px solid #e94560;
+    padding: 16px 22px;
+    border-radius: 0 10px 10px 0;
+    margin: 20px 0;
+    font-size: 15px;
+    color: #ccd6f6;
+    font-style: italic;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 16px 0; }
+  th { background: #0f3460; color: #e94560; padding: 12px 16px; text-align: left; }
+  td { padding: 11px 16px; border-bottom: 1px solid #1e2d50; color: #ccd6f6; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .green { background: #1a4731; color: #4ade80; }
+  .yellow { background: #4a3a1a; color: #fbbf24; }
+  .red { background: #4a1a1a; color: #f87171; }
+
+  .route-row { display: flex; gap: 16px; margin: 20px 0; }
+  .route-box {
+    flex: 1;
+    background: #0f3460;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .route-name { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .route-box p { font-size: 13px; color: #8892b0; }
+  .pass-c { color: #4ade80; }
+  .recover-c { color: #60a5fa; }
+  .clarify-c { color: #fbbf24; }
+  .escalate-c { color: #f87171; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+
+  .card { background: #0f3460; border-radius: 10px; padding: 20px; }
+  .card h3 { font-size: 15px; margin-bottom: 10px; color: #e94560; }
+  .card p { font-size: 14px; color: #ccd6f6; line-height: 1.6; }
+
+  .progress-wrap { margin: 8px 0 4px; }
+  .progress-bar { background: #1e2d50; border-radius: 6px; height: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 6px; }
+
+  .quote-box { background: #0f3460; border-radius: 10px; padding: 20px 24px; margin: 12px 0; }
+  .quote-box .q { font-size: 16px; font-style: italic; color: #ccd6f6; margin-bottom: 8px; }
+  .quote-box .author { font-size: 13px; color: #8892b0; }
+
+  ul { margin-left: 24px; }
+  ul li { font-size: 16px; color: #ccd6f6; margin-bottom: 14px; line-height: 1.6; }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(15,52,96,0.9);
+    padding: 10px 24px;
+    border-radius: 30px;
+    backdrop-filter: blur(8px);
+    z-index: 100;
+  }
+
+  .nav button {
+    background: none;
+    border: none;
+    color: #ccd6f6;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+
+  .nav button:hover { background: #e94560; color: #fff; }
+  .nav button:disabled { color: #333; cursor: default; }
+  .nav button:disabled:hover { background: none; }
+
+  .nav .counter { font-size: 14px; color: #8892b0; min-width: 50px; text-align: center; }
+
+  .dots { display: flex; gap: 8px; align-items: center; }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #444;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .dot.active { background: #e94560; width: 20px; border-radius: 4px; }
+
+  .footer-team {
+    position: absolute;
+    bottom: 20px;
+    left: 80px;
+    font-size: 13px;
+    color: #333;
+  }
+</style>
+</head>
+<body>
+
+<div class="slides-container">
+
+  <!-- SLIDE 1 -->
+  <div class="slide active">
+    <div class="tag">User & Job</div>
+    <h1>Học viên bị block ngay lúc đang học</h1>
+    <h2>1 trong 5 lần hỏi tutor — nhận về "không tìm thấy nội dung"</h2>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="num">18.8%</div>
+        <div class="label">lượt hỏi tutor thất bại</div>
+        <div class="sub">237 / 1.261 lượt</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">52.9%</div>
+        <div class="label">rating là down</div>
+        <div class="sub">37 / 70 lượt có rating</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">46.2%</div>
+        <div class="label">response không có citation</div>
+        <div class="sub">582 / 1.261 lượt</div>
+      </div>
+    </div>
+
+    <div class="highlight">
+      "Học viên bôi đen đoạn ở Trang 37, hỏi tóm tắt → Tutor: <em>'Xin lỗi, tôi không tìm thấy nội dung trang 37'</em>"
+      <br><small style="color:#555;font-style:normal">— Turn T0649, chatlog thật 369 học viên</small>
+    </div>
+
+    <div class="footer-team">Nhóm C1vlearn · Hướng A — VLearn</div>
+    <div class="slide-number">1 / 6</div>
+  </div>
+
+  <!-- SLIDE 2 -->
+  <div class="slide">
+    <div class="tag">Lý do chọn</div>
+    <h1>Vì sao chọn fix retrieval?</h1>
+    <h2>3 ứng viên — chọn cái có bằng chứng mạnh nhất và build được trong 1 ngày</h2>
+
+    <table>
+      <tr>
+        <th>Ứng viên</th>
+        <th>Số đo từ data</th>
+        <th>Hậu quả</th>
+        <th></th>
+      </tr>
+      <tr>
+        <td><strong>Fix tutor fail tìm slide</strong></td>
+        <td>18.8% lượt hỏi</td>
+        <td>Bị block hoàn toàn, bỏ dùng tutor</td>
+        <td><span class="badge green">✅ Chọn</span></td>
+      </tr>
+      <tr>
+        <td>Fix citation thiếu/sai trang</td>
+        <td>46.2% response</td>
+        <td>Không kiểm chứng được AI nói gì</td>
+        <td><span class="badge yellow">Loại — cùng gốc rễ</span></td>
+      </tr>
+      <tr>
+        <td>Tutor kiểm tra hiểu bài</td>
+        <td>99.76% lượt thiếu</td>
+        <td>Học sai không biết mình đang sai</td>
+        <td><span class="badge red">Loại — quá phức tạp</span></td>
+      </tr>
+    </table>
+
+    <div class="highlight">
+      <strong>Lát cắt:</strong> Học viên bôi đen đoạn Trang X và hỏi → AI dùng số trang làm context ưu tiên → trả lời kèm cite đúng trang, hoặc báo rõ khi không tìm được.
+    </div>
+
+    <div class="slide-number">2 / 6</div>
+  </div>
+
+  <!-- SLIDE 3 -->
+  <div class="slide">
+    <div class="tag">Giải pháp & Demo</div>
+    <h1>Context Rescue — 4 route xử lý</h1>
+    <h2>Conditional automation · Model: gemini-3.1-flash-lite</h2>
+
+    <div class="route-row">
+      <div class="route-box">
+        <div class="route-name pass-c">PASS</div>
+        <p>Có chunk đúng trang<br>→ Trả lời + cite trang</p>
+      </div>
+      <div class="route-box">
+        <div class="route-name recover-c">RECOVER</div>
+        <p>Không có chunk<br>→ Dùng selected_text</p>
+      </div>
+      <div class="route-box">
+        <div class="route-name clarify-c">CLARIFY</div>
+        <p>Mơ hồ / thiếu nguồn<br>→ Hỏi lại 1 câu</p>
+      </div>
+      <div class="route-box">
+        <div class="route-name escalate-c">ESCALATE</div>
+        <p>Ngoài phạm vi<br>→ Từ chối + hướng dẫn</p>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>✅ Case chuẩn — PASS</h3>
+        <p>Bôi đen "Missing Values" Trang 12<br>→ Tutor trả lời đúng kèm <em>Trích dẫn: Trang 12</em></p>
+      </div>
+      <div class="card">
+        <h3>⚠️ Case khó — CLARIFY</h3>
+        <p>Bôi đen "điêu toa" Trang 25<br>→ <em>"Tôi chưa xác định được thuật ngữ này, bạn có thể làm rõ không?"</em></p>
+      </div>
+    </div>
+
+    <div class="slide-number">3 / 6</div>
+  </div>
+
+  <!-- SLIDE 4 -->
+  <div class="slide">
+    <div class="tag">Kết quả đo</div>
+    <h1>13/20 (65%) — chưa đạt quality bar</h1>
+    <h2>Quality bar cam kết: ≥75% và 0 case cite sai trang</h2>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="num" style="color:#f87171">65%</div>
+        <div class="label">Kết quả lượt 2</div>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" style="width:65%;background:#f87171"></div></div>
+        </div>
+        <div class="sub">13/20 structural pass</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" style="color:#fbbf24">75%</div>
+        <div class="label">Quality bar đã cam kết</div>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" style="width:75%;background:#fbbf24"></div></div>
+        </div>
+        <div class="sub">Chốt 23:59 N1, không đổi</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>7 case fail — cùng 1 nguyên nhân</h3>
+      <p>Tất cả là route <span class="recover-c">RECOVER</span>: candidate_chunks rỗng, AI cần dùng selected_text làm nguồn nhưng prompt chưa hướng dẫn rõ cách cite.</p>
+      <p style="margin-top:10px;color:#4ade80">→ Fix: bổ sung hướng dẫn cite selected_text vào system prompt → chạy lại lượt 3</p>
+    </div>
+
+    <div class="slide-number">4 / 6</div>
+  </div>
+
+  <!-- SLIDE 5 -->
+  <div class="slide">
+    <div class="tag">User thật nói gì</div>
+    <h1>Feedback từ validation</h1>
+    <h2>5 người thử prototype — sáng 31/07/2026</h2>
+
+    <div class="quote-box">
+      <div class="q">"[Điền quote nguyên văn sau khi test sáng mai]"</div>
+      <div class="author">— Lê Trung Hiếu / học viên · willing user</div>
+    </div>
+
+    <div class="quote-box">
+      <div class="q">"[Điền quote nguyên văn sau khi test sáng mai]"</div>
+      <div class="author">— Đoàn Nhật Bình / học viên · willing user</div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>Thay đổi từ feedback</h3>
+      <p>[Điền sau khi validation xong sáng mai]</p>
+    </div>
+
+    <div class="slide-number">5 / 6</div>
+  </div>
+
+  <!-- SLIDE 6 -->
+  <div class="slide">
+    <div class="tag">Backlog & Bài học</div>
+    <h1>Chưa xử lý được — và lý do</h1>
+    <h2>Dựa trên failure eval và feedback từ user thật</h2>
+
+    <div class="two-col" style="margin-top:8px">
+      <div class="card">
+        <h3>Còn trong backlog</h3>
+        <ul style="margin-left:16px;margin-top:8px">
+          <li style="font-size:14px;margin-bottom:10px"><strong>Fix RECOVER citation</strong> — 7 case fail do AI không cite được selected_text khi chunk rỗng</li>
+          <li style="font-size:14px;margin-bottom:10px"><strong>Tích hợp transcript thật</strong> — candidate_chunks hiện dùng data giả, chưa nối được với 6 transcript bài giảng thật</li>
+          <li style="font-size:14px"><strong>[Feedback từ validation]</strong> — điền sáng mai</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Giữ nguyên có lý do</h3>
+        <ul style="margin-left:16px;margin-top:8px">
+          <li style="font-size:14px;margin-bottom:10px">Không mở rộng tính năng mới sau CP4 — tránh vỡ prototype trước demo</li>
+          <li style="font-size:14px">Quality bar giữ nguyên 75% dù kết quả 65% — cam kết từ 23:59 N1, phân tích khoảng cách thay vì hạ bar</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight" style="margin-top:24px">
+      <strong>Bài học lớn nhất:</strong> Phải thấy output thật trước khi đặt quality bar — đặt bar trước khi chạy lần nào thường đặt sai mức.
+    </div>
+
+    <div class="footer-team">Nhóm C1vlearn · Lâm Thành Bảo · Phan Bá Khánh Linh · Đinh Văn Sinh · Nguyễn Minh Thu</div>
+    <div class="slide-number">6 / 6</div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button id="prev" onclick="changeSlide(-1)" disabled>&#8592;</button>
+  <div class="dots" id="dots"></div>
+  <button id="next" onclick="changeSlide(1)">&#8594;</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.getElementById('dots');
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    document.querySelectorAll('.dot')[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    document.querySelectorAll('.dot')[current].classList.add('active');
+    document.getElementById('prev').disabled = current === 0;
+    document.getElementById('next').disabled = current === slides.length - 1;
+  }
+
+  function changeSlide(dir) { goTo(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+</script>
+
+</body>
+</html>
