@@ -2,10 +2,26 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google import genai
 import os, json
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+# Always load the local configuration next to this file, even if the command is
+# launched from the repository root.
+ENV_FILE = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=ENV_FILE)
+
+
+def get_client():
+    """Create the Gemini client only after a valid local API key is available."""
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError(
+            "Chưa cấu hình GEMINI_API_KEY. Sao chép codebase/.env.example thành "
+            "codebase/.env, rồi thay YOUR_GEMINI_API_KEY bằng API key của bạn."
+        )
+    return genai.Client(api_key=api_key)
+
+
 MODEL = "gemini-3.1-flash-lite"
 
 app = Flask(__name__)
@@ -60,6 +76,18 @@ def tutor():
     target_page = data.get("target_page")
     document_id = data.get("document_id", "current-document")
     candidate_chunks = data.get("candidate_chunks", [])
+
+    try:
+        client = get_client()
+    except RuntimeError as e:
+        return jsonify({
+            "route": "ESCALATE",
+            "answer": "Chưa thể kết nối AI vì server chưa có Gemini API key.",
+            "citations": [],
+            "used_chunk_ids": [],
+            "clarifying_question": None,
+            "reason": str(e)
+        }), 503
 
     user_message = f"""user_query: {user_query}
 selected_text: {selected_text}
